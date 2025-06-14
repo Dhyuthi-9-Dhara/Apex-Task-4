@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Projects</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        nav a {
+            margin: 10px;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        section {
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+        input, button, select {
+            margin: 10px;
+            padding: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            background: #ddd;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>My Web Projects</h1>
+        <nav>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#todo">To-Do List</a>
+            <a href="#products">Product Listing</a>
+        </nav>
+    </header>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <h2>Welcome to My Portfolio</h2>
+        <p>Hello! I'm a Web Developer. Check out my projects and contact me for collaborations!</p>
+    </section>
+
+    <!-- To-Do List Section -->
+    <section id="todo">
+        <h2>To-Do List</h2>
+        <input type="text" id="taskInput" placeholder="Enter a task">
+        <button onclick="addTask()">Add Task</button>
+        <ul id="taskList"></ul>
+    </section>
+
+    <!-- Product Listing Section -->
+    <section id="products">
+        <h2>Product Listing</h2>
+        <select id="filterCategory">
+            <option value="all">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+        </select>
+        <input type="text" id="searchBar" placeholder="Search products...">
+        <ul id="productList"></ul>
+    </section>
+
+    <script>
+        // To-Do List Functionality
+        document.addEventListener("DOMContentLoaded", loadTasks);
+
+        function addTask() {
+            let taskInput = document.getElementById("taskInput");
+            let taskList = document.getElementById("taskList");
+
+            if (taskInput.value.trim() === "") return;
+
+            let li = document.createElement("li");
+            li.innerHTML = `${taskInput.value} <button onclick="deleteTask(this)">❌</button>`;
+            taskList.appendChild(li);
+            saveTasks();
+            taskInput.value = "";
+        }
+
+        function deleteTask(button) {
+            button.parentElement.remove();
+            saveTasks();
+        }
+
+        function saveTasks() {
+            let tasks = [];
+            document.querySelectorAll("#taskList li").forEach(li => {
+                tasks.push(li.textContent.replace("❌", "").trim());
+            });
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            let storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            let taskList = document.getElementById("taskList");
+
+            storedTasks.forEach(task => {
+                let li = document.createElement("li");
+                li.innerHTML = `${task} <button onclick="deleteTask(this)">❌</button>`;
+                taskList.appendChild(li);
+            });
+        }
+
+        // Product Listing Functionality
+        const products = [
+            { name: "Laptop", category: "electronics" },
+            { name: "Smartphone", category: "electronics" },
+            { name: "T-Shirt", category: "clothing" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            displayProducts(products);
+
+            document.getElementById("filterCategory").addEventListener("change", filterProducts);
+            document.getElementById("searchBar").addEventListener("input", searchProducts);
+        });
+
+        function displayProducts(products) {
+            const productList = document.getElementById("productList");
+            productList.innerHTML = "";
+            products.forEach(product => {
+                let li = document.createElement("li");
+                li.textContent = product.name;
+                productList.appendChild(li);
+            });
+        }
+
+        function filterProducts() {
+            const category = document.getElementById("filterCategory").value;
+            const filtered = category === "all" ? products : products.filter(p => p.category === category);
+            displayProducts(filtered);
+        }
+
+        function searchProducts() {
+            const search = document.getElementById("searchBar").value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(search));
+            displayProducts(filtered);
+        }
+    </script>
+
+</body>
+</html>
